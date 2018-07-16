@@ -78,28 +78,30 @@ class MainActivity : AppCompatActivity() {
         private var rows: Int = 0
 
         fun setColumnsAmount(c: Int) {
-            columns = c - 1
+            columns = c
         }
 
         fun setRowsAmount(r: Int) {
-            rows = r - 1
+            rows = r
         }
 
         fun build(): Building {
 
-            val buildingMatrix = mutableListOf<MutableList<Segment>>()
+            val segments = mutableListOf<MutableList<Segment>>()
 
-            for (r in 0..rows) {
+            for (r in 0 until rows) {
 
                 val row = mutableListOf<Segment>()
-                buildingMatrix.add(row)
+                segments.add(row)
 
-                for (c in 0..columns) {
+                for (c in 0 until columns) {
                     row.add(segmentFactory.make())
                 }
             }
 
-            return Building(buildingMatrix)
+            val result = Building()
+            result.setSegments(segments)
+            return result
         }
     }
 

@@ -2,6 +2,8 @@ package com.elevenetc.buildingbuilder
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 
@@ -25,25 +27,45 @@ class BuildingBuilderView : View {
 
     class BuildingDrawer {
 
-        fun draw(building: Building, canvas: Canvas) {
+        private val cellPaint = Paint().apply {
+            style = Paint.Style.STROKE
+            color = Color.BLUE
+            strokeWidth = 10f
+        }
 
+        fun draw(building: Building, canvas: Canvas) {
+            drawSegments(canvas, building)
+            drawCells(canvas, building)
+        }
+
+        private fun drawCells(canvas: Canvas, building: Building) {
+
+        }
+
+        private fun drawSegments(canvas: Canvas, building: Building) {
             canvas.save()
 
-            for ((r, row) in building.rows.withIndex()) {
+            for ((r, row) in building.matrix.cells.withIndex()) {
 
-                canvas.translate(0f, row.height)
+                canvas.translate(0f, row[0].height)
                 canvas.save()
 
-                for ((c, segment) in row.segments.withIndex()) {
-                    val column = building.columns[c]
+                for ((c, segment) in row.withIndex()) {
+                    val cell = building.matrix.cells[r][c]
 
-                    canvas.translate(column.width, 0f)
-                    segment.draw(column.width, row.height, canvas)
+                    canvas.translate(cell.width, 0f)
+
+                    segment.segment?.draw(cell.width, row[0].height, canvas)
+                    drawCell(cell, canvas)
                 }
                 canvas.restore()
             }
 
             canvas.restore()
+        }
+
+        private fun drawCell(cell: BuildingMatrix.Cell, canvas: Canvas) {
+            canvas.drawRect(0f, 0f, cell.width, cell.height, cellPaint)
         }
     }
 
