@@ -1,5 +1,6 @@
 package com.elevenetc.buildingbuilder
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -7,66 +8,71 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
 
+
 class BuildingBuilderView : View {
 
     constructor(context: Context) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
-    private var drawer: BuildingDrawer = BuildingDrawer()
-    private var building: Building? = null
+    lateinit var layer: Layer
+    private val gridPaint = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 2.5f
+        color = Color.GRAY
+        alpha = 100
+    }
 
-    fun setBuilding(building: Building) {
-        this.building = building
+    fun addLayer(layer: Layer) {
+        this.layer = layer
         invalidate()
+    }
+
+    fun fitWidthGrid(handler: (Int) -> Unit) {
+        if (!layer.fitsGrid()) {
+
+            val wAnim = ValueAnimator.ofInt(layer.model.width, layer.model.cellsWidth)
+
+            wAnim.addUpdateListener { updatedAnimation ->
+                val value = updatedAnimation.animatedValue as Int
+                handler(value)
+                //layer.model.width = value
+                //invalidate()
+            }
+
+            wAnim.start()
+        }
+    }
+
+    fun fitHeightGrid(handler: (Int) -> Unit) {
+        if (!layer.fitsGrid()) {
+
+            val hAnim = ValueAnimator.ofInt(layer.model.height, layer.model.cellsHeight)
+
+            hAnim.addUpdateListener { updatedAnimation ->
+                val value = updatedAnimation.animatedValue as Int
+                handler(value)
+                //layer.model.height = updatedAnimation.animatedValue as Int
+                //invalidate()
+            }
+
+            hAnim.start()
+        }
     }
 
     override fun onDraw(canvas: Canvas) {
 
-        if (building != null) drawer.draw(building!!, canvas)
+        layer.draw(canvas)
+
+        val grid = layer.model.grid
+        val max = grid.maxWidth
+
+        for (h in 0..max step grid.cellHeight) {
+            canvas.drawLine(0f, h.toFloat(), max.toFloat(), h.toFloat(), gridPaint)
+        }
+
+        for (w in 0..max step grid.cellWidth) {
+            canvas.drawLine(w.toFloat(), 0f, w.toFloat(), max.toFloat(), gridPaint)
+        }
+
     }
-
-    class BuildingDrawer {
-
-        private val cellPaint = Paint().apply {
-            style = Paint.Style.STROKE
-            color = Color.BLUE
-            strokeWidth = 10f
-        }
-
-        fun draw(building: Building, canvas: Canvas) {
-            drawSegments(canvas, building)
-            drawCells(canvas, building)
-        }
-
-        private fun drawCells(canvas: Canvas, building: Building) {
-
-        }
-
-        private fun drawSegments(canvas: Canvas, building: Building) {
-            canvas.save()
-
-            for ((r, row) in building.matrix.cells.withIndex()) {
-
-                canvas.translate(0f, row[0].height)
-                canvas.save()
-
-                for ((c, segment) in row.withIndex()) {
-                    val cell = building.matrix.cells[r][c]
-
-                    canvas.translate(cell.width, 0f)
-
-                    segment.segment?.draw(cell.width, row[0].height, canvas)
-                    drawCell(cell, canvas)
-                }
-                canvas.restore()
-            }
-
-            canvas.restore()
-        }
-
-        private fun drawCell(cell: BuildingMatrix.Cell, canvas: Canvas) {
-            canvas.drawRect(0f, 0f, cell.width, cell.height, cellPaint)
-        }
-    }
-
 }

@@ -1,6 +1,5 @@
 package com.elevenetc.buildingbuilder
 
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.SeekBar
@@ -15,32 +14,28 @@ class MainActivity : AppCompatActivity() {
         val seekBarWidth = findViewById<SeekBar>(R.id.seek_bar_width)
         val seekBarHeight = findViewById<SeekBar>(R.id.seek_bar_height)
 
-        seekBarWidth.min = 1
-        seekBarHeight.min = 1
-        seekBarWidth.max = 20
-        seekBarHeight.max = 10
+        val initWidth = 150
+        val initHeight = 150
 
-        seekBarWidth.progress = 5
-        seekBarHeight.progress = 3
+        seekBarWidth.min = 100
+        seekBarHeight.min = 100
+        seekBarWidth.max = 600
+        seekBarHeight.max = 600
 
-        val configurator = BuildingConfigurator(object : SegmentFactory {
-            override fun make(): Segment {
-                return SimpleSegment(Color.RED)
-            }
+        seekBarWidth.progress = initWidth
+        seekBarHeight.progress = initHeight
 
-        })
-
-        configurator.setColumnsAmount(seekBarWidth.progress)
-        configurator.setRowsAmount(seekBarHeight.progress)
-
-        builderView.setBuilding(configurator.build())
-
-
+        val model = LayerModel(initWidth, initHeight, Grid(600, 600, 100, 100))
+        val layer = Layer(
+                LayerStyle(),
+                model
+        )
+        builderView.addLayer(layer)
 
         seekBarWidth.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-                configurator.setColumnsAmount(progress)
-                builderView.setBuilding(configurator.build())
+                model.updateWidth(progress)
+                builderView.invalidate()
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) {
@@ -48,17 +43,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(p0: SeekBar?) {
-
+                builderView.fitWidthGrid { progress ->
+                    seekBarWidth.progress = progress
+                }
             }
 
         })
 
 
-
         seekBarHeight.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-                configurator.setRowsAmount(progress)
-                builderView.setBuilding(configurator.build())
+                model.updateHeight(progress)
+                builderView.invalidate()
             }
 
             override fun onStartTrackingTouch(progress: SeekBar?) {
@@ -66,47 +62,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onStopTrackingTouch(p0: SeekBar?) {
-
-            }
-
-        })
-    }
-
-    class BuildingConfigurator(private val segmentFactory: SegmentFactory) {
-
-        private var columns: Int = 0
-        private var rows: Int = 0
-
-        fun setColumnsAmount(c: Int) {
-            columns = c
-        }
-
-        fun setRowsAmount(r: Int) {
-            rows = r
-        }
-
-        fun build(): Building {
-
-            val segments = mutableListOf<MutableList<Segment>>()
-
-            for (r in 0 until rows) {
-
-                val row = mutableListOf<Segment>()
-                segments.add(row)
-
-                for (c in 0 until columns) {
-                    row.add(segmentFactory.make())
+                builderView.fitHeightGrid { progress ->
+                    seekBarHeight.progress = progress
                 }
             }
 
-            val result = Building()
-            result.setSegments(segments)
-            return result
-        }
-    }
-
-    interface SegmentFactory {
-        fun make(): Segment
+        })
     }
 
 
