@@ -7,8 +7,29 @@ class Layer(
         val model: LayerModel
 ) {
 
+    var initDraw = false
+
+    init {
+        model.heightHandler = { before, now ->
+            style.onModelHeightSizeChanged(before, now)
+        }
+
+        model.widthHandler = { before, now ->
+            style.onModelWidthSizeChanged(before, now)
+        }
+
+
+    }
+
     fun draw(canvas: Canvas) {
-        style.drawBackground(model, canvas)
+        if (!initDraw) {
+            initDraw = true
+            style.drawBackground(model, canvas)
+            style.drawForeground(model, canvas)
+        } else {
+            style.drawBackground(model, canvas)
+        }
+
     }
 
     fun fitsGrid(): Boolean {

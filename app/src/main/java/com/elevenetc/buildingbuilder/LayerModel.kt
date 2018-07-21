@@ -6,6 +6,8 @@ class LayerModel(
         val grid: Grid
 ) {
 
+    var widthHandler: ((before: Int, now: Int) -> Unit)? = null
+    var heightHandler: ((before: Int, now: Int) -> Unit)? = null
     var cellsWidth: Int = 0
     var cellsHeight: Int = 0
 
@@ -26,8 +28,16 @@ class LayerModel(
     }
 
     private fun calcFitSize() {
+        val beforeWidth = cellsWidth
+        val beforeHeight = cellsHeight
         cellsWidth = fit(width, grid.cellWidth)
         cellsHeight = fit(height, grid.cellHeight)
+
+        if (beforeWidth != cellsWidth)
+            widthHandler?.invoke(beforeWidth / grid.cellWidth, cellsWidth / grid.cellWidth)
+
+        if (beforeHeight != cellsHeight)
+            heightHandler?.invoke(beforeHeight / grid.cellHeight, cellsHeight / grid.cellHeight)
     }
 
     private fun fit(size: Int, step: Int): Int {

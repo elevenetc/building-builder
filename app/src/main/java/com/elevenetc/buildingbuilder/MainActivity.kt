@@ -14,20 +14,26 @@ class MainActivity : AppCompatActivity() {
         val seekBarWidth = findViewById<SeekBar>(R.id.seek_bar_width)
         val seekBarHeight = findViewById<SeekBar>(R.id.seek_bar_height)
 
-        val initWidth = 150
-        val initHeight = 150
+        val initWidth = 300
+        val initHeight = 300
+        val width = 10
+        val height = 10
+        val cellWidth = 100
+        val cellHeight = 100
 
-        seekBarWidth.min = 100
-        seekBarHeight.min = 100
-        seekBarWidth.max = 600
-        seekBarHeight.max = 600
+        seekBarWidth.min = cellWidth * 1
+        seekBarHeight.min = cellHeight * 1
+        seekBarWidth.max = cellWidth * width
+        seekBarHeight.max = cellHeight * height
 
         seekBarWidth.progress = initWidth
         seekBarHeight.progress = initHeight
 
-        val model = LayerModel(initWidth, initHeight, Grid(600, 600, 100, 100))
+        val grid = Grid(600, 600, 100, 100, width, height)
+        val model = LayerModel(initWidth, initHeight, grid)
+        val style = LayerStyle(grid) { builderView.invalidate() }
         val layer = Layer(
-                LayerStyle(),
+                style,
                 model
         )
         builderView.addLayer(layer)

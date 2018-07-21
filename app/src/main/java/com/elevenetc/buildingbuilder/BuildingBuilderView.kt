@@ -35,8 +35,6 @@ class BuildingBuilderView : View {
             wAnim.addUpdateListener { updatedAnimation ->
                 val value = updatedAnimation.animatedValue as Int
                 handler(value)
-                //layer.model.width = value
-                //invalidate()
             }
 
             wAnim.start()
@@ -51,8 +49,6 @@ class BuildingBuilderView : View {
             hAnim.addUpdateListener { updatedAnimation ->
                 val value = updatedAnimation.animatedValue as Int
                 handler(value)
-                //layer.model.height = updatedAnimation.animatedValue as Int
-                //invalidate()
             }
 
             hAnim.start()
