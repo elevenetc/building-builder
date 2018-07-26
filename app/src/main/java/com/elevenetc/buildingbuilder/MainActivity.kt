@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         val initWidth = 300
         val initHeight = 300
-        val width = 10
+        val width = 1
         val height = 10
         val cellWidth = 100
         val cellHeight = 100
@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
                 style,
                 model
         )
+
         builderView.addLayer(layer)
 
         seekBarWidth.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

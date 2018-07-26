@@ -22,13 +22,17 @@ class Layer(
     }
 
     fun draw(canvas: Canvas) {
-        if (!initDraw) {
-            initDraw = true
-            style.drawBackground(model, canvas)
-            style.drawForeground(model, canvas)
-        } else {
-            style.drawBackground(model, canvas)
-        }
+
+        style.drawBackground(model, canvas)
+        style.drawForeground(model, canvas)
+
+//        if (!initDraw) {
+//            initDraw = true
+//            style.drawBackground(model, canvas)
+//            style.drawForeground(model, canvas)
+//        } else {
+//            style.drawBackground(model, canvas)
+//        }
 
     }
 
