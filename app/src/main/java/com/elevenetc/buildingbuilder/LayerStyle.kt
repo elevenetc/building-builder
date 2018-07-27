@@ -39,21 +39,21 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
     }
 
     fun onModelWidthSizeChanged(before: Int, now: Int) {
-
+        for (r in 0 until windows.size)
+            for (c in 0 until windows[r].size) {
+                val w = windows[r][c]
+                if (c < now) w.show()
+                else w.hide()
+            }
     }
 
     fun onModelHeightSizeChanged(before: Int, now: Int) {
 
-        for (r in 0 until windows.size) {
-            for (w in windows[r]) {
-                if (r < now) {
-                    w.show()
-                } else {
-                    w.hide()
-                }
+        for (r in 0 until windows.size)
+            for (w in windows[r])
+                if (r < now) w.show()
+                else w.hide()
 
-            }
-        }
     }
 
     fun drawForeground(model: LayerModel, canvas: Canvas) {
@@ -65,25 +65,19 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
         }
     }
 
-    class Window(private val invalidator: () -> Unit) {
-
-        var alphaZ = 0
+    class Window(private val invalidate: () -> Unit) {
 
         private val paint = Paint().apply {
             style = Paint.Style.STROKE
             strokeWidth = 5f
             color = Color.RED
-            alpha = alphaZ
         }
 
         private var visible = false
-        private var animation = false
 
         fun draw(cellR: Int, cellC: Int,
                  cellWidth: Int, cellHeight: Int,
                  canvas: Canvas) {
-
-            if (!visible) return
 
             val padding = 20
             val top = cellR * cellHeight + padding
@@ -100,9 +94,8 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
 
             if (visible) return
             visible = true
-            if (animation) return
 
-            initAnim(alphaZ, 255) {
+            initAnim(paint.alpha, 255) {
                 if (!visible) hide()
             }
         }
@@ -110,30 +103,29 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
         fun hide() {
             if (!visible) return
             visible = false
-            if (animation) return
 
-            initAnim(alphaZ, 0) {
+            initAnim(paint.alpha, 0) {
                 if (visible) show()
             }
         }
 
         fun initAnim(from: Int, to: Int, onEnd: () -> Unit) {
-            animation = true
+
+            if (animator.isRunning) animator.cancel()
 
             animator.cancel()
 
             animator = ValueAnimator.ofInt(from, to)
-            animator.duration = 1000
+            animator.duration = 500
 
             animator.addUpdateListener {
-                alphaZ = it.animatedValue as Int
-                paint.alpha = alphaZ
-                invalidator()
+                paint.alpha = it.animatedValue as Int
+                invalidate()
             }
 
             animator.addListener(object : Animator.AnimatorListener {
                 override fun onAnimationCancel(p0: Animator?) {
-                    animation = false
+
                 }
 
                 override fun onAnimationStart(p0: Animator?) {
@@ -145,7 +137,6 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
                 }
 
                 override fun onAnimationEnd(p0: Animator?) {
-                    animation = false
                     onEnd()
                 }
 

@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         val initWidth = 300
         val initHeight = 300
-        val width = 1
+        val width = 5
         val height = 10
         val cellWidth = 100
         val cellHeight = 100
