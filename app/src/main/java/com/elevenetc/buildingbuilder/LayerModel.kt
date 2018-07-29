@@ -1,45 +1,30 @@
 package com.elevenetc.buildingbuilder
 
 class LayerModel(
-        var width: Int,
-        var height: Int,
-        val grid: Grid
+        val values: LayerValues
 ) {
 
-    var widthHandler: ((before: Int, now: Int) -> Unit)? = null
-    var heightHandler: ((before: Int, now: Int) -> Unit)? = null
-    var cellsWidth: Int = 0
-    var cellsHeight: Int = 0
+    var sizeChangeHandler: ((values: LayerValues) -> Unit)? = null
 
     init {
-        calcFitSize()
+
     }
 
     fun updateWidth(width: Int) {
-        if (this.width == width) return
-        this.width = width
-        calcFitSize()
+        if (values.width == width) return
+        values.width = width
+        sizeChangeHandler?.invoke(values)
     }
 
     fun updateHeight(height: Int) {
-        if (this.height == height) return
-        this.height = height
-        calcFitSize()
+        if (values.height == height) return
+        values.height = height
+        sizeChangeHandler?.invoke(values)
     }
 
-    private fun calcFitSize() {
-        val beforeWidth = cellsWidth
-        val beforeHeight = cellsHeight
-        cellsWidth = fit(width, grid.cellWidth)
-        cellsHeight = fit(height, grid.cellHeight)
-
-        if (beforeWidth != cellsWidth)
-            widthHandler?.invoke(beforeWidth / grid.cellWidth, cellsWidth / grid.cellWidth)
-
-        if (beforeHeight != cellsHeight)
-            heightHandler?.invoke(beforeHeight / grid.cellHeight, cellsHeight / grid.cellHeight)
-    }
-
+    /**
+     * Returns size in pixels
+     */
     private fun fit(size: Int, step: Int): Int {
         val rem = size % step
         return if (rem < step / 2) size - rem

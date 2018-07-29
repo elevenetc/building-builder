@@ -1,6 +1,5 @@
 package com.elevenetc.buildingbuilder
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -27,39 +26,39 @@ class BuildingBuilderView : View {
         invalidate()
     }
 
-    fun fitWidthGrid(handler: (Int) -> Unit) {
-        if (!layer.fitsGrid()) {
-
-            val wAnim = ValueAnimator.ofInt(layer.model.width, layer.model.cellsWidth)
-
-            wAnim.addUpdateListener { updatedAnimation ->
-                val value = updatedAnimation.animatedValue as Int
-                handler(value)
-            }
-
-            wAnim.start()
-        }
-    }
-
-    fun fitHeightGrid(handler: (Int) -> Unit) {
-        if (!layer.fitsGrid()) {
-
-            val hAnim = ValueAnimator.ofInt(layer.model.height, layer.model.cellsHeight)
-
-            hAnim.addUpdateListener { updatedAnimation ->
-                val value = updatedAnimation.animatedValue as Int
-                handler(value)
-            }
-
-            hAnim.start()
-        }
-    }
+//    fun fitWidthGrid(handler: (Int) -> Unit) {
+//        if (!layer.fitsGrid()) {
+//
+//            val wAnim = ValueAnimator.ofInt(layer.model.width, layer.model.cellsWidth)
+//
+//            wAnim.addUpdateListener { updatedAnimation ->
+//                val value = updatedAnimation.animatedValue as Int
+//                handler(value)
+//            }
+//
+//            wAnim.start()
+//        }
+//    }
+//
+//    fun fitHeightGrid(handler: (Int) -> Unit) {
+//        if (!layer.fitsGrid()) {
+//
+//            val hAnim = ValueAnimator.ofInt(layer.model.height, layer.model.cellsHeight)
+//
+//            hAnim.addUpdateListener { updatedAnimation ->
+//                val value = updatedAnimation.animatedValue as Int
+//                handler(value)
+//            }
+//
+//            hAnim.start()
+//        }
+//    }
 
     override fun onDraw(canvas: Canvas) {
 
         layer.draw(canvas)
 
-        val grid = layer.model.grid
+        val grid = layer.model.values
         val max = grid.maxWidth
 
         for (h in 0..max step grid.cellHeight) {

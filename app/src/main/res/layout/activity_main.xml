@@ -13,18 +13,84 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <SeekBar
-            android:id="@+id/seek_bar_width"
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
 
-        <SeekBar
-            android:id="@+id/seek_bar_height"
-            android:layout_width="match_parent"
-            android:layout_height="50dp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="W:" />
+
+            <TextView
+                android:id="@+id/text_width"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:minEms="2"
+                tools:text="999" />
+
+            <Button
+                android:id="@+id/btn_reduce_width"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="-" />
+
+            <Button
+                android:id="@+id/btn_add_width"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="+" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="H:" />
+
+            <TextView
+                android:id="@+id/text_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:gravity="center"
+                android:minEms="2"
+                tools:text="123" />
+
+            <Button
+                android:id="@+id/btn_reduce_height"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="-" />
+
+            <Button
+                android:id="@+id/btn_add_height"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:text="+" />
+
+        </LinearLayout>
 
     </LinearLayout>
 

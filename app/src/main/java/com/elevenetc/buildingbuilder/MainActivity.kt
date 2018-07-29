@@ -2,7 +2,8 @@ package com.elevenetc.buildingbuilder
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.SeekBar
+import android.widget.Button
+import android.widget.TextView
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,70 +12,79 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val builderView = findViewById<BuildingBuilderView>(R.id.builder_view)
-        val seekBarWidth = findViewById<SeekBar>(R.id.seek_bar_width)
-        val seekBarHeight = findViewById<SeekBar>(R.id.seek_bar_height)
+        val btnAddWidth = findViewById<Button>(R.id.btn_add_width)
+        val btnReduceWidth = findViewById<Button>(R.id.btn_reduce_width)
+        val textStatusWidth = findViewById<TextView>(R.id.text_width)
 
-        val initWidth = 300
-        val initHeight = 300
-        val width = 5
-        val height = 10
+        val btnAddHeight = findViewById<Button>(R.id.btn_add_height)
+        val btnReduceHeight = findViewById<Button>(R.id.btn_reduce_height)
+        val textStatusHeight = findViewById<TextView>(R.id.text_height)
+
+        val maxWidth = 10
+        val minWidth = 1
+        val maxHeight = 5
+        val minHeight = 1
+
         val cellWidth = 100
         val cellHeight = 100
 
-        seekBarWidth.min = cellWidth * 1
-        seekBarHeight.min = cellHeight * 1
-        seekBarWidth.max = cellWidth * width
-        seekBarHeight.max = cellHeight * height
+        var currentWidth = 3
+        var currentHeight = 2
 
-        seekBarWidth.progress = initWidth
-        seekBarHeight.progress = initHeight
+        val values = LayerValues(currentWidth, currentHeight, maxWidth, maxHeight, cellWidth, cellHeight)
+        val model = LayerModel(values)
+        val style = LayerStyle(values) { builderView.invalidate() }
+        val layer = Layer(style, model)
 
-        val grid = Grid(600, 600, 100, 100, width, height)
-        val model = LayerModel(initWidth, initHeight, grid)
-        val style = LayerStyle(grid) { builderView.invalidate() }
-        val layer = Layer(
-                style,
-                model
-        )
+        AddReduceView(btnAddWidth, btnReduceWidth, textStatusWidth, maxWidth, minWidth, currentWidth) { w ->
+            model.updateWidth(w)
+        }
+
+        AddReduceView(btnAddHeight, btnReduceHeight, textStatusHeight, maxHeight, minHeight, currentHeight) { h ->
+            model.updateHeight(h)
+        }
+
+        model.sizeChangeHandler = { values ->
+            style.onSizeChanged(values)
+        }
 
         builderView.addLayer(layer)
+    }
 
-        seekBarWidth.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-                model.updateWidth(progress)
-                builderView.invalidate()
-            }
-
-            override fun onStartTrackingTouch(p0: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-                builderView.fitWidthGrid { progress ->
-                    seekBarWidth.progress = progress
+    internal class AddReduceView(
+            val btnAdd: Button,
+            val btnReduce: Button,
+            val textStatus: TextView,
+            val max: Int,
+            val min: Int,
+            var current: Int,
+            val changeHandler: (current: Int) -> Unit
+    ) {
+        init {
+            btnAdd.setOnClickListener {
+                if (current < max) {
+                    current++
+                    changeHandler(current)
+                    updateViewState()
                 }
             }
 
-        })
-
-
-        seekBarHeight.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(p0: SeekBar?, progress: Int, p2: Boolean) {
-                model.updateHeight(progress)
-                builderView.invalidate()
-            }
-
-            override fun onStartTrackingTouch(progress: SeekBar?) {
-
-            }
-
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-                builderView.fitHeightGrid { progress ->
-                    seekBarHeight.progress = progress
+            btnReduce.setOnClickListener {
+                if (current > min) {
+                    current--
+                    changeHandler(current)
+                    updateViewState()
                 }
             }
 
-        })
+            updateViewState()
+        }
+
+        private fun updateViewState() {
+            textStatus.text = current.toString()
+            btnReduce.isEnabled = current != min
+            btnAdd.isEnabled = current != max
+        }
     }
 
 

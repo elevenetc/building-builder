@@ -6,17 +6,17 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 
-class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
+class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
 
     val windows = mutableListOf<MutableList<Window>>()
 
     init {
-        for (r in 0 until grid.height) {
+        for (r in 0 until layerValues.maxHeight) {
 
             val row = mutableListOf<Window>()
             windows.add(row)
 
-            for (c in 0 until grid.width) {
+            for (c in 0 until layerValues.maxWidth) {
                 row.add(Window(invalidator))
             }
         }
@@ -34,33 +34,34 @@ class LayerStyle(val grid: Grid, val invalidator: () -> Unit) {
     }
 
     fun drawBackground(model: LayerModel, canvas: Canvas) {
-        canvas.drawRect(0f, 0f, model.width.toFloat(), model.height.toFloat(), fillPaint)
-        canvas.drawRect(0f, 0f, model.width.toFloat(), model.height.toFloat(), strokePaint)
+
+        val width = model.values.width * model.values.cellWidth.toFloat()
+        val height = model.values.height * model.values.cellHeight.toFloat()
+
+        canvas.drawRect(0f, 0f, width, height, fillPaint)
+        canvas.drawRect(0f, 0f, width, height, strokePaint)
     }
 
-    fun onModelWidthSizeChanged(before: Int, now: Int) {
+    fun onSizeChanged(values: LayerValues) {
+
+
         for (r in 0 until windows.size)
             for (c in 0 until windows[r].size) {
                 val w = windows[r][c]
-                if (c < now) w.show()
-                else w.hide()
+
+                if (r <= values.height && c <= values.width) {
+                    w.show()
+                } else {
+                    w.hide()
+                }
             }
     }
 
-    fun onModelHeightSizeChanged(before: Int, now: Int) {
-
-        for (r in 0 until windows.size)
-            for (w in windows[r])
-                if (r < now) w.show()
-                else w.hide()
-
-    }
-
     fun drawForeground(model: LayerModel, canvas: Canvas) {
-        for (r in 0 until grid.height) {
+        for (r in 0 until layerValues.height) {
             val row = windows[r]
-            for (c in 0 until grid.width)
-                row[c].draw(r, c, model.grid.cellWidth, model.grid.cellHeight, canvas)
+            for (c in 0 until layerValues.width)
+                row[c].draw(r, c, model.values.cellWidth, model.values.cellHeight, canvas)
 
         }
     }

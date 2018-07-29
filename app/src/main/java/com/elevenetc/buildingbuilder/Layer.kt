@@ -10,14 +10,10 @@ class Layer(
     var initDraw = false
 
     init {
-        model.heightHandler = { before, now ->
-            style.onModelHeightSizeChanged(before, now)
-        }
 
-        model.widthHandler = { before, now ->
-            style.onModelWidthSizeChanged(before, now)
-        }
-
+//        model.sizeChangeHandler = { w, h ->
+//            style.onSizeChanged(w, h)
+//        }
 
     }
 
@@ -36,9 +32,9 @@ class Layer(
 
     }
 
-    fun fitsGrid(): Boolean {
-        val grid = model.grid
-        return model.width % grid.cellWidth == 0 && model.height % grid.cellHeight == 0
-    }
+//    fun fitsGrid(): Boolean {
+//        val grid = model.values
+//        return model.width % grid.cellWidth == 0 && model.height % grid.cellHeight == 0
+//    }
 
 }
