@@ -62,11 +62,11 @@ class BuildingBuilderView : View {
         val max = grid.maxWidth
 
         for (h in 0..max step grid.cellHeight) {
-            canvas.drawLine(0f, h.toFloat(), max.toFloat(), h.toFloat(), gridPaint)
+            //canvas.drawLine(0f, h.toFloat(), max.toFloat(), h.toFloat(), gridPaint)
         }
 
         for (w in 0..max step grid.cellWidth) {
-            canvas.drawLine(w.toFloat(), 0f, w.toFloat(), max.toFloat(), gridPaint)
+            //canvas.drawLine(w.toFloat(), 0f, w.toFloat(), max.toFloat(), gridPaint)
         }
 
     }

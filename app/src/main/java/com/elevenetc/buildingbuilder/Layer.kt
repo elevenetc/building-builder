@@ -19,7 +19,7 @@ class Layer(
 
     fun draw(canvas: Canvas) {
 
-        style.drawBackground(model, canvas)
+        //style.drawBackground(model, canvas)
         style.drawForeground(model, canvas)
 
 //        if (!initDraw) {

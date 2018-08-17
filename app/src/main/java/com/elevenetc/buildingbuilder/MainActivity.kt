@@ -20,16 +20,16 @@ class MainActivity : AppCompatActivity() {
         val btnReduceHeight = findViewById<Button>(R.id.btn_reduce_height)
         val textStatusHeight = findViewById<TextView>(R.id.text_height)
 
-        val maxWidth = 10
-        val minWidth = 1
+        val maxWidth = 5
         val maxHeight = 5
+        val minWidth = 1
         val minHeight = 1
 
         val cellWidth = 100
         val cellHeight = 100
 
-        var currentWidth = 3
-        var currentHeight = 2
+        var currentWidth = maxWidth
+        var currentHeight = maxHeight
 
         val values = LayerValues(currentWidth, currentHeight, maxWidth, maxHeight, cellWidth, cellHeight)
         val model = LayerModel(values)
@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         model.sizeChangeHandler = { values ->
             style.onSizeChanged(values)
+            builderView.invalidate()
         }
 
         builderView.addLayer(layer)

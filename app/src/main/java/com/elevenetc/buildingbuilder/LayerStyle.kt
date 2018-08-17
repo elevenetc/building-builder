@@ -49,7 +49,7 @@ class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
             for (c in 0 until windows[r].size) {
                 val w = windows[r][c]
 
-                if (r <= values.height && c <= values.width) {
+                if (r <= values.height - 1 && c <= values.width - 1) {
                     w.show()
                 } else {
                     w.hide()
@@ -58,11 +58,10 @@ class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
     }
 
     fun drawForeground(model: LayerModel, canvas: Canvas) {
-        for (r in 0 until layerValues.height) {
+        for (r in 0 until windows.size) {
             val row = windows[r]
-            for (c in 0 until layerValues.width)
+            for (c in 0 until windows[r].size)
                 row[c].draw(r, c, model.values.cellWidth, model.values.cellHeight, canvas)
-
         }
     }
 
@@ -72,6 +71,7 @@ class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
             style = Paint.Style.STROKE
             strokeWidth = 5f
             color = Color.RED
+            alpha = 0
         }
 
         private var visible = false
