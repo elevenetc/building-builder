@@ -5,7 +5,7 @@ import android.graphics.Canvas
 class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
 
 
-    private val background = LayerBackground()
+    private val background = LayerBackground(layerValues, invalidator)
     private val foreground = LayerForeground(layerValues, invalidator)
 
     init {
@@ -13,7 +13,7 @@ class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
     }
 
     fun initDraw(model: LayerModel, canvas: Canvas) {
-        background.initDraw(model, canvas)
+        background.initDraw(canvas)
         foreground.initDraw(canvas)
     }
 
@@ -22,10 +22,11 @@ class LayerStyle(val layerValues: LayerValues, val invalidator: () -> Unit) {
     }
 
     fun drawBackground(model: LayerModel, canvas: Canvas) {
-        background.draw(model, canvas)
+        background.draw(canvas)
     }
 
     fun onSizeChanged(values: LayerValues) {
+        background.onSizeChanged()
         foreground.onSizeChanged()
     }
 

@@ -1,13 +1,18 @@
 package com.elevenetc.buildingbuilder
 
+import android.animation.ValueAnimator
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 
-class LayerBackground {
+class LayerBackground(
+        private val layerValues: LayerValues,
+        private val invalidate: () -> Unit) {
 
-    var width: Float = 0f
-    var height: Float = 0f
+    private var width: Int = layerValues.width
+    private var height: Int = layerValues.height
+    private var widthAnimator: ValueAnimator = ValueAnimator.ofInt(0)
+    private var heightAnimator: ValueAnimator = ValueAnimator.ofInt(0)
 
     private val fillPaint = Paint().apply {
         color = Color.parseColor("#0055aa")
@@ -20,20 +25,37 @@ class LayerBackground {
         strokeWidth = 10f
     }
 
-    fun initDraw(model: LayerModel, canvas: Canvas) {
-        width = model.values.width * model.values.cellWidth.toFloat()
-        height = model.values.height * model.values.cellHeight.toFloat()
+    fun onSizeChanged() {
+        setAnimator(widthAnimator, width, layerValues.width * layerValues.cellWidth) { width = it }
+        setAnimator(heightAnimator, height, layerValues.height * layerValues.cellHeight) { height = it }
+    }
+
+    fun initDraw(canvas: Canvas) {
+        width = layerValues.width * layerValues.cellWidth
+        height = layerValues.height * layerValues.cellHeight
         draw(canvas)
     }
 
-    fun draw(model: LayerModel, canvas: Canvas) {
-        width = model.values.width * model.values.cellWidth.toFloat()
-        height = model.values.height * model.values.cellHeight.toFloat()
-        draw(canvas)
+    fun draw(canvas: Canvas) {
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), fillPaint)
+        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), strokePaint)
     }
 
-    private fun draw(canvas: Canvas) {
-        canvas.drawRect(0f, 0f, width, height, fillPaint)
-        canvas.drawRect(0f, 0f, width, height, strokePaint)
+    private fun setAnimator(oldAnim: ValueAnimator, from: Int, to: Int, onUpdate: (value: Int) -> Unit): ValueAnimator {
+
+        if (from == to) return oldAnim
+
+        oldAnim.cancel()
+
+        val animator = ValueAnimator.ofInt(from, to)
+        animator.duration = 500
+
+        animator.addUpdateListener {
+            onUpdate(it.animatedValue as Int)
+            invalidate()
+        }
+
+        animator.start()
+        return animator
     }
 }
