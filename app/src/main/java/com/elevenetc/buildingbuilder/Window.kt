@@ -8,6 +8,7 @@ import android.graphics.Paint
 
 class Window(
         private val model: Model,
+        private val values: LayerValues,
         private val invalidate: () -> Unit
 ) {
 
@@ -20,12 +21,15 @@ class Window(
 
     private var visible = false
     private var animator: ValueAnimator = ValueAnimator.ofInt(0)
+    private val padding = 20
 
     fun draw(canvas: Canvas) {
 
-        val padding = 20
-        val top = model.cellR * model.cellHeight + padding
-        val left = model.cellC * model.cellWidth + padding
+        val leftShift = values.centerX - values.maxPxWidth() / 2
+        val topShift = values.bottom - values.maxPxHeight()
+
+        val top = topShift + model.cellR * model.cellHeight + padding
+        val left = leftShift + model.cellC * model.cellWidth + padding
         val right = left + model.cellWidth - padding * 2
         val bottom = top + model.cellHeight - padding * 2
 

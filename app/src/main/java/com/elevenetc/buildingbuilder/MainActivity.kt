@@ -31,16 +31,16 @@ class MainActivity : AppCompatActivity() {
         var currentWidth = maxWidth
         var currentHeight = maxHeight
 
-        val values = LayerValues(currentWidth, currentHeight, maxWidth, maxHeight, cellWidth, cellHeight)
+        val values = LayerValues(currentWidth, currentHeight, maxWidth, maxHeight, cellWidth, cellHeight, 1000, 500)
         val model = LayerModel(values)
         val style = LayerStyle(values) { builderView.invalidate() }
         val layer = Layer(style, model)
 
-        AddReduceView(btnAddWidth, btnReduceWidth, textStatusWidth, maxWidth, minWidth, currentWidth) { w ->
+        AddReduceView(btnAddWidth, btnReduceWidth, textStatusWidth, maxWidth, minWidth, currentWidth, 2) { w ->
             model.updateWidth(w)
         }
 
-        AddReduceView(btnAddHeight, btnReduceHeight, textStatusHeight, maxHeight, minHeight, currentHeight) { h ->
+        AddReduceView(btnAddHeight, btnReduceHeight, textStatusHeight, maxHeight, minHeight, currentHeight, 1) { h ->
             model.updateHeight(h)
         }
 
@@ -59,12 +59,13 @@ class MainActivity : AppCompatActivity() {
             val max: Int,
             val min: Int,
             var current: Int,
+            val diff: Int,
             val changeHandler: (current: Int) -> Unit
     ) {
         init {
             btnAdd.setOnClickListener {
                 if (current < max) {
-                    current++
+                    current += diff
                     changeHandler(current)
                     updateViewState()
                 }
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
             btnReduce.setOnClickListener {
                 if (current > min) {
-                    current--
+                    current -= diff
                     changeHandler(current)
                     updateViewState()
                 }

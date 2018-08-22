@@ -2,7 +2,10 @@ package com.elevenetc.buildingbuilder
 
 import android.graphics.Canvas
 
-class LayerForeground(val layerValues: LayerValues, val invalidator: () -> Unit) {
+class LayerForeground(
+        val layerValues: LayerValues,
+        val invalidator: () -> Unit
+) {
 
     private val windows = mutableListOf<MutableList<Window>>()
 
@@ -15,6 +18,7 @@ class LayerForeground(val layerValues: LayerValues, val invalidator: () -> Unit)
             for (c in 0 until layerValues.maxWidth) {
                 row.add(Window(
                         Window.Model(r, c, layerValues.cellWidth, layerValues.cellHeight),
+                        layerValues,
                         invalidator)
                 )
             }
@@ -22,7 +26,7 @@ class LayerForeground(val layerValues: LayerValues, val invalidator: () -> Unit)
     }
 
     fun initDraw(canvas: Canvas) {
-        traverseWindows(false)
+        showOrHideWindows(false)
         invalidator.invoke()
     }
 
@@ -35,19 +39,39 @@ class LayerForeground(val layerValues: LayerValues, val invalidator: () -> Unit)
     }
 
     fun onSizeChanged() {
-        traverseWindows(true)
+        showOrHideWindows(true)
     }
 
-    private fun traverseWindows(animate: Boolean) {
-        for (r in 0 until windows.size)
-            for (c in 0 until windows[r].size) {
-                val w = windows[r][c]
+    private fun showOrHideWindows(animate: Boolean) {
+        for (r in 0 until windows.size) {
 
-                if (r <= layerValues.height - 1 && c <= layerValues.width - 1) {
-                    w.show(animate)
-                } else {
-                    w.hide(animate)
-                }
+            val row = windows[r]
+            var left = 0
+            var right = row.size - 1
+            val halfWidth = layerValues.width / 2
+            val w = row.size / 2 - halfWidth
+            val h = windows.size - layerValues.height
+
+            if (r < h) {
+                row.forEach { window -> window.hide(animate) }
+                continue //hide top invisible rows completely
             }
+
+            while (left <= right) {
+
+                val colIsInvisible = left < w
+
+                if (colIsInvisible) {
+                    row[left].hide(animate)
+                    row[right].hide(animate)
+                } else {
+                    row[left].show(animate)
+                    row[right].show(animate)
+                }
+
+                left++
+                right--
+            }
+        }
     }
 }

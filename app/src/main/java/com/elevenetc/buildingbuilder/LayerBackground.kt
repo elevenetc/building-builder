@@ -6,11 +6,11 @@ import android.graphics.Color
 import android.graphics.Paint
 
 class LayerBackground(
-        private val layerValues: LayerValues,
+        private val values: LayerValues,
         private val invalidate: () -> Unit) {
 
-    private var width: Int = layerValues.width
-    private var height: Int = layerValues.height
+    private var width: Int = values.width
+    private var height: Int = values.height
     private var widthAnimator: ValueAnimator = ValueAnimator.ofInt(0)
     private var heightAnimator: ValueAnimator = ValueAnimator.ofInt(0)
 
@@ -26,19 +26,25 @@ class LayerBackground(
     }
 
     fun onSizeChanged() {
-        setAnimator(widthAnimator, width, layerValues.width * layerValues.cellWidth) { width = it }
-        setAnimator(heightAnimator, height, layerValues.height * layerValues.cellHeight) { height = it }
+        setAnimator(widthAnimator, width, values.width * values.cellWidth) { width = it }
+        setAnimator(heightAnimator, height, values.height * values.cellHeight) { height = it }
     }
 
     fun initDraw(canvas: Canvas) {
-        width = layerValues.width * layerValues.cellWidth
-        height = layerValues.height * layerValues.cellHeight
+        width = values.width * values.cellWidth
+        height = values.height * values.cellHeight
         draw(canvas)
     }
 
     fun draw(canvas: Canvas) {
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), fillPaint)
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), strokePaint)
+
+        val left = values.centerX - width.toFloat() / 2
+        val right = values.centerX + width.toFloat() / 2
+        val top = values.bottom - height.toFloat()
+        val bottom = values.bottom.toFloat()
+
+        canvas.drawRect(left, top, right, bottom, fillPaint)
+        canvas.drawRect(left, top, right, bottom, strokePaint)
     }
 
     private fun setAnimator(oldAnim: ValueAnimator, from: Int, to: Int, onUpdate: (value: Int) -> Unit): ValueAnimator {
